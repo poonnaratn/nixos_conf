@@ -4,7 +4,6 @@
     # import any other modules from here
     imports = [
       self.nixosModules.x1CarbonHardware
-      self.nixosModules.niri
     ];
 
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -15,9 +14,6 @@
 
 	  # Enable Buetooth
 	  hardware.bluetooth.enable = true;
-
-	  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
 
 	  # Bootloader.
 	  boot.loader.systemd-boot.enable = true;
@@ -152,5 +148,4 @@
 	  system.stateVersion = "25.11"; # Did you read the comment?
 
 	  };
-
 }
