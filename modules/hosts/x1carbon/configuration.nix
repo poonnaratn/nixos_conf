@@ -5,6 +5,7 @@
     imports = [
       self.nixosModules.x1CarbonHardware
       self.nixosModules.keyboard
+      self.nixosModules.sshAgent
       #self.nixosModules.niri
     ];
 
