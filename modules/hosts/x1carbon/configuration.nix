@@ -4,9 +4,11 @@
     # import any other modules from here
     imports = [
       self.nixosModules.x1CarbonHardware
+      self.nixosModules.keyboard
+      #self.nixosModules.niri
     ];
 
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+	  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
 	  # 32bits GUI
 	  hardware.graphics.enable = true;
