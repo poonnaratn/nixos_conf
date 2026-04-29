@@ -59,6 +59,26 @@ Notes:
 - Use `path:.#...` for evaluation when files are new/untracked.
 - If you omit `--flake`, `nixos-rebuild` falls back to `/etc/nixos`.
 
+## Useful Nix websites
+
+- `https://search.nixos.org/options`  
+  Find NixOS options and their exact config paths (`services.*`, `programs.*`, etc).
+
+- `https://search.nixos.org/packages`  
+  Find package names for `environment.systemPackages` and check availability by system.
+
+- `https://wiki.nixos.org`  
+  Official community wiki with practical setup guides and examples.
+
+- `https://nixos.org/manual/nixos/stable/`  
+  NixOS manual (official reference for modules, services, and system behavior).
+
+- `https://home-manager-options.extranix.com/`  
+  Search Home Manager options quickly when configuring user-level programs.
+
+- `https://mynixos.com/`  
+  Community search UI for packages and options with examples.
+
 ## Adding a new machine
 
 1. Create host directory:
