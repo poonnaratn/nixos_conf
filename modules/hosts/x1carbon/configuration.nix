@@ -10,6 +10,7 @@
       self.nixosModules.audioPipewire
       self.nixosModules.fontsThai
       self.nixosModules.desktopApps
+      self.nixosModules.cliTools
 
       self.nixosModules.keyboard
       self.nixosModules.sshAgent

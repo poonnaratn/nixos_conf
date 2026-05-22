@@ -8,7 +8,6 @@
       discord-ptb
       steam
       git
-      fzf
       bruno
       wl-clipboard
       tor-browser
