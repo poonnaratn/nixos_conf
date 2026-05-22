@@ -6,26 +6,72 @@
     };
   };
 
-  perSystem = { pkgs, lib, self', ... }: {
-    packages.myNiri = inputs.wrapper-modules.wrappers.niri.wrap {
-      inherit pkgs; # THIS PART IS VERY IMPORTAINT, I FORGOT IT IN THE VIDEO!!!
-      settings = {
-        spawn-at-startup = [
-          (lib.getExe self'.packages.myNoctalia)
-        ];
+  perSystem = { pkgs, lib, self', ... }:
+    let
+      # Full letter workspace mapping, with h/l reserved for prev/next navigation.
+      workspaceLetters = builtins.filter (k: !(builtins.elem k [ "h" "l" ])) [
+        "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m"
+        "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z"
+      ];
 
-        xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
+      numberKeys = [
+        "1" "2" "3" "4" "5" "6" "7" "8" "9"
+      ];
 
-        input.keyboard.xkb.layout = "us,ua";
+      mkBinds = keys: mkAction: builtins.listToAttrs (map (k: {
+        name = k;
+        value = mkAction k;
+      }) keys);
 
-        layout.gaps = 5;
+      modWorkspaceFocus = mkBinds numberKeys (k: { "focus-workspace" = builtins.fromJSON k; });
+      modWorkspaceMove = mkBinds numberKeys (k: { "move-column-to-workspace" = builtins.fromJSON k; });
 
-        binds = {
-          "Mod+Return".spawn-sh = lib.getExe pkgs.kitty;
-          "Mod+Q".close-window = null;
-          "Mod+S".spawn-sh = "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
+      altWorkspaceFocusNumbers = mkBinds numberKeys (k: { "focus-workspace" = builtins.fromJSON k; });
+      altWorkspaceMoveNumbers = mkBinds numberKeys (k: { "move-column-to-workspace" = builtins.fromJSON k; });
+
+      altWorkspaceFocusLetters = mkBinds workspaceLetters (k: { "focus-workspace" = k; });
+      altWorkspaceMoveLetters = mkBinds workspaceLetters (k: { "move-column-to-workspace" = k; });
+    in
+    {
+      packages.myNiri = inputs.wrapper-modules.wrappers.niri.wrap {
+        inherit pkgs; # THIS PART IS VERY IMPORTAINT, I FORGOT IT IN THE VIDEO!!!
+        settings = {
+          spawn-at-startup = [
+            (lib.getExe self'.packages.myNoctalia)
+          ];
+
+          xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
+
+          input.keyboard.xkb.layout = "us,ua";
+
+          layout.gaps = 5;
+
+          binds =
+            {
+              # Keep common Niri/Cachy-style core actions.
+              "Mod+Return".spawn-sh = lib.getExe pkgs.kitty;
+              "Mod+Q".close-window = _: {};
+              "Mod+S".spawn-sh = "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
+              "Mod+H"."focus-column-left" = _: {};
+              "Mod+L"."focus-column-right" = _: {};
+              "Mod+Ctrl+H"."move-column-left" = _: {};
+              "Mod+Ctrl+L"."move-column-right" = _: {};
+              "Mod+Tab"."focus-workspace-down" = _: {};
+              "Mod+Shift+Tab"."focus-workspace-up" = _: {};
+
+              # AeroSpace-like workspace flow on Alt.
+              "Alt+H"."focus-workspace-up" = _: {};
+              "Alt+L"."focus-workspace-down" = _: {};
+            }
+            # Keep numbered workspace access on both Mod and Alt.
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+${k}" v) modWorkspaceFocus)
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+Ctrl+${k}" v) modWorkspaceMove)
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+${k}" v) altWorkspaceFocusNumbers)
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+Shift+${k}" v) altWorkspaceMoveNumbers)
+            # Full letter workspace mapping (except h/l reserved above for prev/next).
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+${lib.toUpper k}" v) altWorkspaceFocusLetters)
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+Shift+${lib.toUpper k}" v) altWorkspaceMoveLetters);
         };
       };
     };
-  };
 }

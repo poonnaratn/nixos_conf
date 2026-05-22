@@ -13,7 +13,7 @@
 
       self.nixosModules.keyboard
       self.nixosModules.sshAgent
-      # self.nixosModules.niri
+      self.nixosModules.niri
     ];
   };
 }

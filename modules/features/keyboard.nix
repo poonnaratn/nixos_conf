@@ -11,8 +11,9 @@
             # Tap CapsLock for Escape, hold for Control.
             capslock = "overload(control, esc)";
 
-            # Hold Right Alt to enter the "nav" layer.
-            rightalt = "layer(nav)";
+            # Use Copilot key as the nav-layer trigger (commonly exposed as F23).
+            # If your hardware reports a different key, run `sudo keyd monitor` and adjust.
+            f23 = "layer(nav)";
           };
 
           nav = {
