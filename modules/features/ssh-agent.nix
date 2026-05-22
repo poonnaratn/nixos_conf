@@ -1,5 +1,8 @@
 { ... }: {
   flake.nixosModules.sshAgent = { pkgs, ... }: {
+    # Keep OpenSSH agent as the single SSH agent to avoid conflicts with gcr.
+    services.gnome.gcr-ssh-agent.enable = false;
+
     environment.sessionVariables.SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/ssh-agent";
     environment.extraInit = ''
       if [ -n "$XDG_RUNTIME_DIR" ] && [ -z "$SSH_AUTH_SOCK" ]; then
