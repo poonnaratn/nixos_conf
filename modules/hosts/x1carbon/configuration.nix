@@ -6,7 +6,7 @@
 
       self.nixosModules.baseSystem
       self.nixosModules.localeAndTime
-      self.nixosModules.plasmaDesktop
+      # self.nixosModules.plasmaDesktop
       self.nixosModules.audioPipewire
       self.nixosModules.fontsThai
       self.nixosModules.desktopApps
