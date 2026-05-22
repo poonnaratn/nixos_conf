@@ -61,6 +61,21 @@
 	  services.displayManager.sddm.enable = true;
 	  services.desktopManager.plasma6.enable = true;
 
+	  # Fonts with Thai coverage to avoid fallback glyphs in Plasma/apps.
+	  fonts = {
+	    packages = with pkgs; [
+	      noto-fonts
+	      noto-fonts-cjk-sans
+	      noto-fonts-color-emoji
+	      tlwg
+	    ];
+	    fontconfig.defaultFonts = {
+	      sansSerif = [ "Noto Sans Thai" "Noto Sans" ];
+	      serif = [ "Noto Serif Thai" "Noto Serif" ];
+	      monospace = [ "Noto Sans Mono" ];
+	    };
+	  };
+
 	  # Configure keymap in X11
 	  services.xserver.xkb = {
 	    layout = "us";
@@ -116,6 +131,7 @@
 	    fzf
 	    bruno
 	    wl-clipboard
+	    tor-browser
 	  ];
 
 	  programs.steam={
