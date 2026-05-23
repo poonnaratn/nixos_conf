@@ -11,6 +11,7 @@
     boot.kernelPackages = pkgs.linuxPackages_latest;
 
     networking.networkmanager.enable = true;
+    services.upower.enable = true;
 
     nixpkgs.config.allowUnfree = true;
     system.stateVersion = "25.11";
