@@ -11,6 +11,7 @@
       bruno
       wl-clipboard
       tor-browser
+      heroic
     ];
 
     programs.steam = {
