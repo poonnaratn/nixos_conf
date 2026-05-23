@@ -9,8 +9,8 @@
 
   perSystem = { pkgs, lib, self', ... }:
     let
-      # Full letter workspace mapping, with h/l reserved for prev/next navigation.
-      workspaceLetters = builtins.filter (k: !(builtins.elem k [ "h" "l" ])) [
+      # Full letter workspace mapping a-z.
+      workspaceLetters = [
         "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m"
         "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z"
       ];
@@ -32,6 +32,7 @@
 
       altWorkspaceFocusLetters = mkBinds workspaceLetters (k: { "focus-workspace" = k; });
       altWorkspaceMoveLetters = mkBinds workspaceLetters (k: { "move-column-to-workspace" = k; });
+      namedLetterWorkspaces = mkBinds workspaceLetters (_: _: {});
     in
     {
       packages.myNiri = inputs.wrapper-modules.wrappers.niri.wrap {
@@ -46,6 +47,7 @@
           input.keyboard.xkb.layout = "us,ua";
 
           layout.gaps = 5;
+          workspaces = namedLetterWorkspaces;
 
           binds =
             {
@@ -59,17 +61,13 @@
               "Mod+Ctrl+L"."move-column-right" = _: {};
               "Mod+Tab"."focus-workspace-down" = _: {};
               "Mod+Shift+Tab"."focus-workspace-up" = _: {};
-
-              # AeroSpace-like workspace flow on Alt.
-              "Alt+H"."focus-workspace-up" = _: {};
-              "Alt+L"."focus-workspace-down" = _: {};
             }
             # Keep numbered workspace access on both Mod and Alt.
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+${k}" v) modWorkspaceFocus)
-            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+Ctrl+${k}" v) modWorkspaceMove)
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+Shift+${k}" v) modWorkspaceMove)
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+${k}" v) altWorkspaceFocusNumbers)
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+Shift+${k}" v) altWorkspaceMoveNumbers)
-            # Full letter workspace mapping (except h/l reserved above for prev/next).
+            # Full letter workspace mapping a-z.
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+${lib.toUpper k}" v) altWorkspaceFocusLetters)
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+Shift+${lib.toUpper k}" v) altWorkspaceMoveLetters);
         };
