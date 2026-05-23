@@ -27,11 +27,8 @@
       modWorkspaceFocus = mkBinds numberKeys (k: { "focus-workspace" = builtins.fromJSON k; });
       modWorkspaceMove = mkBinds numberKeys (k: { "move-column-to-workspace" = builtins.fromJSON k; });
 
-      altWorkspaceFocusNumbers = mkBinds numberKeys (k: { "focus-workspace" = builtins.fromJSON k; });
-      altWorkspaceMoveNumbers = mkBinds numberKeys (k: { "move-column-to-workspace" = builtins.fromJSON k; });
-
-      altWorkspaceFocusLetters = mkBinds workspaceLetters (k: { "focus-workspace" = k; });
-      altWorkspaceMoveLetters = mkBinds workspaceLetters (k: { "move-column-to-workspace" = k; });
+      modWorkspaceFocusLetters = mkBinds workspaceLetters (k: { "focus-workspace" = k; });
+      modWorkspaceMoveLetters = mkBinds workspaceLetters (k: { "move-column-to-workspace" = k; });
       namedLetterWorkspaces = mkBinds workspaceLetters (_: _: {});
     in
     {
@@ -44,7 +41,18 @@
 
           xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
 
-          input.keyboard.xkb.layout = "us,ua";
+          input = {
+            "mod-key" = "Super";
+            "mod-key-nested" = "Super";
+            keyboard.xkb = {
+              layout = "us,th";
+              options = "grp:ctrl_space_toggle";
+            };
+            touchpad = {
+              tap = _: {};
+              "natural-scroll" = _: {};
+            };
+          };
 
           layout.gaps = 5;
           workspaces = namedLetterWorkspaces;
@@ -53,23 +61,67 @@
             {
               # Keep common Niri/Cachy-style core actions.
               "Mod+Return".spawn-sh = lib.getExe pkgs.kitty;
-              "Mod+Q".close-window = _: {};
-              "Mod+S".spawn-sh = "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
-              "Mod+H"."focus-column-left" = _: {};
-              "Mod+L"."focus-column-right" = _: {};
-              "Mod+Ctrl+H"."move-column-left" = _: {};
-              "Mod+Ctrl+L"."move-column-right" = _: {};
+              "Mod+Alt+Q".close-window = _: {};
+              "Mod+Space".spawn-sh = "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
+              "Mod+Left"."focus-column-left" = _: {};
+              "Mod+Right"."focus-column-right" = _: {};
+              "Mod+Ctrl+Left"."move-column-left" = _: {};
+              "Mod+Ctrl+Right"."move-column-right" = _: {};
               "Mod+Tab"."focus-workspace-down" = _: {};
               "Mod+Shift+Tab"."focus-workspace-up" = _: {};
+              "Mod+Alt+H"."show-hotkey-overlay" = _: {};
+
+              # Media and brightness keys.
+              "XF86AudioRaiseVolume" = _: {
+                props.allow-when-locked = true;
+                content.spawn-sh = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0";
+              };
+              "XF86AudioLowerVolume" = _: {
+                props.allow-when-locked = true;
+                content.spawn-sh = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-";
+              };
+              "XF86AudioMute" = _: {
+                props.allow-when-locked = true;
+                content.spawn-sh = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+              };
+              "XF86AudioMicMute" = _: {
+                props.allow-when-locked = true;
+                content.spawn-sh = "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
+              };
+              "XF86MonBrightnessUp" = _: {
+                props.allow-when-locked = true;
+                content.spawn-sh = "brightnessctl --class=backlight set +10%";
+              };
+              "XF86MonBrightnessDown" = _: {
+                props.allow-when-locked = true;
+                content.spawn-sh = "brightnessctl --class=backlight set 10%-";
+              };
+              "XF86AudioPlay" = _: {
+                props.allow-when-locked = true;
+                content.spawn-sh = "playerctl play-pause";
+              };
+              "XF86AudioPause" = _: {
+                props.allow-when-locked = true;
+                content.spawn-sh = "playerctl play-pause";
+              };
+              "XF86AudioStop" = _: {
+                props.allow-when-locked = true;
+                content.spawn-sh = "playerctl stop";
+              };
+              "XF86AudioPrev" = _: {
+                props.allow-when-locked = true;
+                content.spawn-sh = "playerctl previous";
+              };
+              "XF86AudioNext" = _: {
+                props.allow-when-locked = true;
+                content.spawn-sh = "playerctl next";
+              };
             }
-            # Keep numbered workspace access on both Mod and Alt.
+            # Numbered and lettered workspace access on Mod/Super.
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+${k}" v) modWorkspaceFocus)
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+Shift+${k}" v) modWorkspaceMove)
-            // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+${k}" v) altWorkspaceFocusNumbers)
-            // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+Shift+${k}" v) altWorkspaceMoveNumbers)
-            # Full letter workspace mapping a-z.
-            // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+${lib.toUpper k}" v) altWorkspaceFocusLetters)
-            // (lib.mapAttrs' (k: v: lib.nameValuePair "Alt+Shift+${lib.toUpper k}" v) altWorkspaceMoveLetters);
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+${lib.toUpper k}" v) modWorkspaceFocusLetters)
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+Shift+${lib.toUpper k}" v) modWorkspaceMoveLetters);
         };
       };
     };

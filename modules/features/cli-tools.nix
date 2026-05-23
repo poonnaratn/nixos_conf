@@ -5,6 +5,8 @@
       zoxide
       eza
       docker
+      brightnessctl
+      playerctl
     ];
 
     programs.fzf = {
