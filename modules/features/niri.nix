@@ -59,17 +59,76 @@
 
           binds =
             {
-              # Keep common Niri/Cachy-style core actions.
+              # Core launchers.
               "Mod+Return".spawn-sh = lib.getExe pkgs.kitty;
-              "Mod+Alt+Q".close-window = _: {};
               "Mod+Space".spawn-sh = "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
-              "Mod+Left"."focus-column-left" = _: {};
-              "Mod+Right"."focus-column-right" = _: {};
-              "Mod+Ctrl+Left"."move-column-left" = _: {};
-              "Mod+Ctrl+Right"."move-column-right" = _: {};
-              "Mod+Tab"."focus-workspace-down" = _: {};
-              "Mod+Shift+Tab"."focus-workspace-up" = _: {};
-              "Mod+Alt+H"."show-hotkey-overlay" = _: {};
+
+              # Core window actions.
+              "Mod+Alt+Q"."close-window" = _: {};
+              "Mod+Alt+M"."maximize-window-to-edges" = _: {};
+              "Mod+Alt+F"."fullscreen-window" = _: {};
+              "Mod+Alt+T"."toggle-window-floating" = _: {};
+              "Mod+Alt+W"."toggle-column-tabbed-display" = _: {};
+              "Mod+Alt+O" = _: {
+                props.repeat = false;
+                content."toggle-overview" = _: {};
+              };
+              "Mod+Alt+Shift+Escape"."show-hotkey-overlay" = _: {};
+              "Mod+Alt+Escape" = _: {
+                props."allow-inhibiting" = false;
+                content."toggle-keyboard-shortcuts-inhibit" = _: {};
+              };
+              "Mod+Alt+Shift+P"."power-off-monitors" = _: {};
+              "Ctrl+Alt+Delete".quit = _: {};
+
+              # Focus movement.
+              "Mod+Alt+Left"."focus-column-left" = _: {};
+              "Mod+Alt+H"."focus-column-left" = _: {};
+              "Mod+Alt+Right"."focus-column-right" = _: {};
+              "Mod+Alt+L"."focus-column-right" = _: {};
+              "Mod+Alt+Up"."focus-window-up" = _: {};
+              "Mod+Alt+K"."focus-window-up" = _: {};
+              "Mod+Alt+Down"."focus-window-down" = _: {};
+              "Mod+Alt+J"."focus-window-down" = _: {};
+              "Mod+Alt+Home"."focus-column-first" = _: {};
+              "Mod+Alt+End"."focus-column-last" = _: {};
+              "Mod+Alt+Tab"."focus-workspace-previous" = _: {};
+
+              # Move windows and columns.
+              "Mod+Alt+Ctrl+Left"."move-column-left" = _: {};
+              "Mod+Alt+Ctrl+H"."move-column-left" = _: {};
+              "Mod+Alt+Ctrl+Right"."move-column-right" = _: {};
+              "Mod+Alt+Ctrl+L"."move-column-right" = _: {};
+              "Mod+Alt+Ctrl+Up"."move-window-up" = _: {};
+              "Mod+Alt+Ctrl+K"."move-window-up" = _: {};
+              "Mod+Alt+Ctrl+Down"."move-window-down" = _: {};
+              "Mod+Alt+Ctrl+J"."move-window-down" = _: {};
+              "Mod+Alt+Ctrl+Home"."move-column-to-first" = _: {};
+              "Mod+Alt+Ctrl+End"."move-column-to-last" = _: {};
+
+              # Monitor focus and send.
+              "Mod+Alt+Shift+Left"."focus-monitor-left" = _: {};
+              "Mod+Alt+Shift+Right"."focus-monitor-right" = _: {};
+              "Mod+Alt+Shift+Up"."focus-monitor-up" = _: {};
+              "Mod+Alt+Shift+Down"."focus-monitor-down" = _: {};
+              "Mod+Alt+Shift+Ctrl+Left"."move-column-to-monitor-left" = _: {};
+              "Mod+Alt+Shift+Ctrl+Right"."move-column-to-monitor-right" = _: {};
+              "Mod+Alt+Shift+Ctrl+Up"."move-column-to-monitor-up" = _: {};
+              "Mod+Alt+Shift+Ctrl+Down"."move-column-to-monitor-down" = _: {};
+
+              # Layout controls.
+              "Mod+Alt+Ctrl+F"."expand-column-to-available-width" = _: {};
+              "Mod+Alt+C"."center-column" = _: {};
+              "Mod+Alt+Ctrl+C"."center-visible-columns" = _: {};
+              "Mod+Alt+Minus"."set-column-width" = "-10%";
+              "Mod+Alt+Equal"."set-column-width" = "+10%";
+              "Mod+Alt+Shift+Minus"."set-window-height" = "-10%";
+              "Mod+Alt+Shift+Equal"."set-window-height" = "+10%";
+
+              # Screenshot actions.
+              "Ctrl+Shift+1".screenshot = _: {};
+              "Ctrl+Shift+2"."screenshot-screen" = _: {};
+              "Ctrl+Shift+3"."screenshot-window" = _: {};
 
               # Media and brightness keys.
               "XF86AudioRaiseVolume" = _: {
