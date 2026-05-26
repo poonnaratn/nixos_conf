@@ -15,10 +15,17 @@
         "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z"
       ];
 
+      numberKeys = [
+        "1" "2" "3" "4" "5" "6" "7" "8" "9"
+      ];
+
       mkBinds = keys: mkAction: builtins.listToAttrs (map (k: {
         name = k;
         value = mkAction k;
       }) keys);
+
+      modWorkspaceFocus = mkBinds numberKeys (k: { "focus-workspace" = builtins.fromJSON k; });
+      modWorkspaceMove = mkBinds numberKeys (k: { "move-column-to-workspace" = builtins.fromJSON k; });
 
       modWorkspaceFocusLetters = mkBinds workspaceLetters (k: { "focus-workspace" = k; });
       modWorkspaceMoveLetters = mkBinds workspaceLetters (k: { "move-column-to-workspace" = k; });
@@ -161,7 +168,9 @@
                 content.spawn-sh = "playerctl next";
               };
             }
-            # Named letter workspace access on Mod/Super.
+            # Workspace access on Mod/Super: by index and by named letter.
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+${k}" v) modWorkspaceFocus)
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+Shift+${k}" v) modWorkspaceMove)
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+${lib.toUpper k}" v) modWorkspaceFocusLetters)
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+Shift+${lib.toUpper k}" v) modWorkspaceMoveLetters);
         };
