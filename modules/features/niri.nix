@@ -15,17 +15,10 @@
         "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z"
       ];
 
-      numberKeys = [
-        "1" "2" "3" "4" "5" "6" "7" "8" "9"
-      ];
-
       mkBinds = keys: mkAction: builtins.listToAttrs (map (k: {
         name = k;
         value = mkAction k;
       }) keys);
-
-      modWorkspaceFocus = mkBinds numberKeys (k: { "focus-workspace" = builtins.fromJSON k; });
-      modWorkspaceMove = mkBinds numberKeys (k: { "move-column-to-workspace" = builtins.fromJSON k; });
 
       modWorkspaceFocusLetters = mkBinds workspaceLetters (k: { "focus-workspace" = k; });
       modWorkspaceMoveLetters = mkBinds workspaceLetters (k: { "move-column-to-workspace" = k; });
@@ -64,66 +57,58 @@
               "Mod+Space".spawn-sh = "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
 
               # Core window actions.
-              "Mod+Alt+Q"."close-window" = _: {};
-              "Mod+Alt+M"."maximize-window-to-edges" = _: {};
-              "Mod+Alt+F"."fullscreen-window" = _: {};
-              "Mod+Alt+T"."toggle-window-floating" = _: {};
-              "Mod+Alt+W"."toggle-column-tabbed-display" = _: {};
-              "Mod+Alt+O" = _: {
+              "Mod+Ctrl+Q"."close-window" = _: {};
+              "Mod+Ctrl+M"."maximize-window-to-edges" = _: {};
+              "Mod+Ctrl+F"."fullscreen-window" = _: {};
+              "Mod+Ctrl+T"."toggle-window-floating" = _: {};
+              "Mod+Ctrl+W"."toggle-column-tabbed-display" = _: {};
+              "Mod+Ctrl+O" = _: {
                 props.repeat = false;
                 content."toggle-overview" = _: {};
               };
-              "Mod+Alt+Shift+Escape"."show-hotkey-overlay" = _: {};
-              "Mod+Alt+Escape" = _: {
+              "Mod+Ctrl+Shift+Escape"."show-hotkey-overlay" = _: {};
+              "Mod+Ctrl+Escape" = _: {
                 props."allow-inhibiting" = false;
                 content."toggle-keyboard-shortcuts-inhibit" = _: {};
               };
-              "Mod+Alt+Shift+P"."power-off-monitors" = _: {};
+              "Mod+Ctrl+Shift+P"."power-off-monitors" = _: {};
               "Ctrl+Alt+Delete".quit = _: {};
 
               # Focus movement.
-              "Mod+Alt+Left"."focus-column-left" = _: {};
-              "Mod+Alt+H"."focus-column-left" = _: {};
-              "Mod+Alt+Right"."focus-column-right" = _: {};
-              "Mod+Alt+L"."focus-column-right" = _: {};
-              "Mod+Alt+Up"."focus-window-up" = _: {};
-              "Mod+Alt+K"."focus-window-up" = _: {};
-              "Mod+Alt+Down"."focus-window-down" = _: {};
-              "Mod+Alt+J"."focus-window-down" = _: {};
-              "Mod+Alt+Home"."focus-column-first" = _: {};
-              "Mod+Alt+End"."focus-column-last" = _: {};
-              "Mod+Alt+Tab"."focus-workspace-previous" = _: {};
+              "Mod+Ctrl+H"."focus-column-left" = _: {};
+              "Mod+Ctrl+L"."focus-column-right" = _: {};
+              "Mod+Ctrl+K"."focus-window-up" = _: {};
+              "Mod+Ctrl+J"."focus-window-down" = _: {};
+              "Mod+Ctrl+Home"."focus-column-first" = _: {};
+              "Mod+Ctrl+End"."focus-column-last" = _: {};
+              "Mod+Ctrl+Tab"."focus-workspace-previous" = _: {};
 
               # Move windows and columns.
-              "Mod+Alt+Ctrl+Left"."move-column-left" = _: {};
-              "Mod+Alt+Ctrl+H"."move-column-left" = _: {};
-              "Mod+Alt+Ctrl+Right"."move-column-right" = _: {};
-              "Mod+Alt+Ctrl+L"."move-column-right" = _: {};
-              "Mod+Alt+Ctrl+Up"."move-window-up" = _: {};
-              "Mod+Alt+Ctrl+K"."move-window-up" = _: {};
-              "Mod+Alt+Ctrl+Down"."move-window-down" = _: {};
-              "Mod+Alt+Ctrl+J"."move-window-down" = _: {};
-              "Mod+Alt+Ctrl+Home"."move-column-to-first" = _: {};
-              "Mod+Alt+Ctrl+End"."move-column-to-last" = _: {};
+              "Mod+Ctrl+Shift+H"."move-column-left" = _: {};
+              "Mod+Ctrl+Shift+L"."move-column-right" = _: {};
+              "Mod+Ctrl+Shift+K"."move-window-up" = _: {};
+              "Mod+Ctrl+Shift+J"."move-window-down" = _: {};
+              "Mod+Ctrl+Shift+Home"."move-column-to-first" = _: {};
+              "Mod+Ctrl+Shift+End"."move-column-to-last" = _: {};
 
               # Monitor focus and send.
-              "Mod+Alt+Shift+Left"."focus-monitor-left" = _: {};
-              "Mod+Alt+Shift+Right"."focus-monitor-right" = _: {};
-              "Mod+Alt+Shift+Up"."focus-monitor-up" = _: {};
-              "Mod+Alt+Shift+Down"."focus-monitor-down" = _: {};
-              "Mod+Alt+Shift+Ctrl+Left"."move-column-to-monitor-left" = _: {};
-              "Mod+Alt+Shift+Ctrl+Right"."move-column-to-monitor-right" = _: {};
-              "Mod+Alt+Shift+Ctrl+Up"."move-column-to-monitor-up" = _: {};
-              "Mod+Alt+Shift+Ctrl+Down"."move-column-to-monitor-down" = _: {};
+              "Mod+Ctrl+Left"."focus-monitor-left" = _: {};
+              "Mod+Ctrl+Right"."focus-monitor-right" = _: {};
+              "Mod+Ctrl+Up"."focus-monitor-up" = _: {};
+              "Mod+Ctrl+Down"."focus-monitor-down" = _: {};
+              "Mod+Ctrl+Shift+Left"."move-column-to-monitor-left" = _: {};
+              "Mod+Ctrl+Shift+Right"."move-column-to-monitor-right" = _: {};
+              "Mod+Ctrl+Shift+Up"."move-column-to-monitor-up" = _: {};
+              "Mod+Ctrl+Shift+Down"."move-column-to-monitor-down" = _: {};
 
               # Layout controls.
-              "Mod+Alt+Ctrl+F"."expand-column-to-available-width" = _: {};
-              "Mod+Alt+C"."center-column" = _: {};
-              "Mod+Alt+Ctrl+C"."center-visible-columns" = _: {};
-              "Mod+Alt+Minus"."set-column-width" = "-10%";
-              "Mod+Alt+Equal"."set-column-width" = "+10%";
-              "Mod+Alt+Shift+Minus"."set-window-height" = "-10%";
-              "Mod+Alt+Shift+Equal"."set-window-height" = "+10%";
+              "Mod+Ctrl+Shift+F"."expand-column-to-available-width" = _: {};
+              "Mod+Ctrl+C"."center-column" = _: {};
+              "Mod+Ctrl+Shift+C"."center-visible-columns" = _: {};
+              "Mod+Ctrl+Minus"."set-column-width" = "-10%";
+              "Mod+Ctrl+Equal"."set-column-width" = "+10%";
+              "Mod+Ctrl+Shift+Minus"."set-window-height" = "-10%";
+              "Mod+Ctrl+Shift+Equal"."set-window-height" = "+10%";
 
               # Screenshot actions.
               "Ctrl+Shift+1".screenshot = _: {};
@@ -176,9 +161,7 @@
                 content.spawn-sh = "playerctl next";
               };
             }
-            # Numbered and lettered workspace access on Mod/Super.
-            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+${k}" v) modWorkspaceFocus)
-            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+Shift+${k}" v) modWorkspaceMove)
+            # Named letter workspace access on Mod/Super.
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+${lib.toUpper k}" v) modWorkspaceFocusLetters)
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+Shift+${lib.toUpper k}" v) modWorkspaceMoveLetters);
         };
