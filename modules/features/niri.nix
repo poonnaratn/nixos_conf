@@ -15,14 +15,20 @@
         "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z"
       ];
 
+      workspaceNumbers = [
+        "1" "2" "3" "4" "5" "6" "7" "8" "9"
+      ];
+
       mkBinds = keys: mkAction: builtins.listToAttrs (map (k: {
         name = k;
         value = mkAction k;
       }) keys);
 
+      modWorkspaceFocusNumbers = mkBinds workspaceNumbers (k: { "focus-workspace" = k; });
+      modWorkspaceMoveNumbers = mkBinds workspaceNumbers (k: { "move-column-to-workspace" = k; });
       modWorkspaceFocusLetters = mkBinds workspaceLetters (k: { "focus-workspace" = k; });
       modWorkspaceMoveLetters = mkBinds workspaceLetters (k: { "move-column-to-workspace" = k; });
-      namedLetterWorkspaces = mkBinds workspaceLetters (_: _: {});
+      namedWorkspaces = mkBinds (workspaceNumbers ++ workspaceLetters) (_: _: {});
     in
     {
       packages.myNiri = inputs.wrapper-modules.wrappers.niri.wrap {
@@ -48,7 +54,7 @@
           };
 
           layout.gaps = 5;
-          workspaces = namedLetterWorkspaces;
+          workspaces = namedWorkspaces;
 
           binds =
             {
@@ -161,7 +167,9 @@
                 content.spawn-sh = "playerctl next";
               };
             }
-            # Named letter workspace access on Mod/Super.
+            # Named workspace access on Mod/Super for both numbers and letters.
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+${k}" v) modWorkspaceFocusNumbers)
+            // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+Shift+${k}" v) modWorkspaceMoveNumbers)
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+${lib.toUpper k}" v) modWorkspaceFocusLetters)
             // (lib.mapAttrs' (k: v: lib.nameValuePair "Mod+Shift+${lib.toUpper k}" v) modWorkspaceMoveLetters);
         };
