@@ -70,6 +70,24 @@ Notes:
 - if you add new untracked files, `nix eval .#...` may not see them yet because flakes read Git-tracked content.
 - use `path:.#...` for local eval while files are untracked, or stage files with `git add`.
 
+## Setup new host script
+
+Use the scaffold script from repo root:
+
+```bash
+./scripts/setup-new-host.sh \
+  --host-dir desktop-main \
+  --flake-host desktopMain \
+  --module-prefix desktopMain \
+  --system-hostname desktop-main \
+  --user-name me \
+  --user-description "me"
+```
+
+Useful flags:
+- `--force` to overwrite existing host files.
+- `--with-power-management` to include `self.nixosModules.powerManagement` in the generated host profile (off by default for desktop-safe scaffolds).
+
 ## Adding a new device
 
 1. Create the host directory:
