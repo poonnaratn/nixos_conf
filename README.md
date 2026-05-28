@@ -72,7 +72,14 @@ Notes:
 
 ## Setup new host script
 
-Use the scaffold script from repo root:
+Use the scaffold script from repo root.  
+If you prefer step-by-step prompts, run it with no arguments:
+
+```bash
+./scripts/setup-new-host.sh
+```
+
+You can still use full CLI args:
 
 ```bash
 ./scripts/setup-new-host.sh \

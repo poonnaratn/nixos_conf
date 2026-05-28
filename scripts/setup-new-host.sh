@@ -4,6 +4,8 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
+  scripts/setup-new-host.sh
+  scripts/setup-new-host.sh --interactive
   scripts/setup-new-host.sh \
     --host-dir <name> \
     --flake-host <Name> \
@@ -22,6 +24,7 @@ Required:
   --user-name           users.users attr name
 
 Optional:
+  --interactive         ask questions step-by-step
   --user-description    defaults to --user-name
   --with-power-management
   --force               overwrite existing target files
@@ -32,6 +35,54 @@ EOF
 die() {
   echo "error: $*" >&2
   exit 1
+}
+
+prompt_with_default() {
+  local __var_name="$1"
+  local prompt="$2"
+  local default="${3-}"
+  local input=""
+
+  while true; do
+    if [[ -n "$default" ]]; then
+      read -r -p "$prompt [$default]: " input || exit 1
+      input="${input:-$default}"
+    else
+      read -r -p "$prompt: " input || exit 1
+    fi
+
+    if [[ -n "$input" ]]; then
+      printf -v "$__var_name" '%s' "$input"
+      return 0
+    fi
+
+    echo "value is required"
+  done
+}
+
+prompt_yes_no() {
+  local __var_name="$1"
+  local prompt="$2"
+  local default="${3:-n}"
+  local input=""
+
+  while true; do
+    read -r -p "$prompt [y/n] (default: $default): " input || exit 1
+    input="${input:-$default}"
+    case "$input" in
+      y|Y|yes|YES)
+        printf -v "$__var_name" '1'
+        return 0
+        ;;
+      n|N|no|NO)
+        printf -v "$__var_name" '0'
+        return 0
+        ;;
+      *)
+        echo "please answer y or n"
+        ;;
+    esac
+  done
 }
 
 require_ident() {
@@ -50,6 +101,8 @@ user_name=""
 user_description=""
 with_power_management=0
 force=0
+interactive=0
+arg_count=$#
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -87,6 +140,10 @@ while [[ $# -gt 0 ]]; do
       with_power_management=1
       shift
       ;;
+    --interactive)
+      interactive=1
+      shift
+      ;;
     --force)
       force=1
       shift
@@ -101,12 +158,34 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-[[ -n "$host_dir" ]] || die "--host-dir is required"
-[[ -n "$flake_host" ]] || die "--flake-host is required"
-[[ -n "$module_prefix" ]] || die "--module-prefix is required"
-[[ -n "$system_hostname" ]] || die "--system-hostname is required"
-[[ -n "$user_name" ]] || die "--user-name is required"
-[[ -n "$user_description" ]] || user_description="$user_name"
+if (( arg_count == 0 )); then
+  interactive=1
+fi
+
+if (( interactive == 1 )); then
+  echo "setup-new-host wizard"
+  echo
+
+  prompt_with_default host_dir "Host directory (under modules/hosts)" "${host_dir:-}"
+  prompt_with_default flake_host "Flake host attr name (nixosConfigurations.<Name>)" "${flake_host:-}"
+  prompt_with_default module_prefix "Module prefix (nixosModules.<Prefix>...)" "${module_prefix:-$flake_host}"
+  prompt_with_default system_hostname "System hostname" "${system_hostname:-$host_dir}"
+  prompt_with_default user_name "User name" "${user_name:-${USER:-me}}"
+  prompt_with_default user_description "User description" "${user_description:-$user_name}"
+
+  if (( with_power_management == 1 )); then
+    prompt_yes_no with_power_management "Include power management module?" "y"
+  else
+    prompt_yes_no with_power_management "Include power management module?" "n"
+  fi
+else
+  [[ -n "$host_dir" ]] || die "--host-dir is required"
+  [[ -n "$flake_host" ]] || die "--flake-host is required"
+  [[ -n "$module_prefix" ]] || die "--module-prefix is required"
+  [[ -n "$system_hostname" ]] || die "--system-hostname is required"
+  [[ -n "$user_name" ]] || die "--user-name is required"
+  [[ -n "$user_description" ]] || user_description="$user_name"
+fi
 
 require_ident "$flake_host" "--flake-host"
 require_ident "$module_prefix" "--module-prefix"
@@ -133,11 +212,19 @@ for path in "$default_path" "$configuration_path" "$identity_path" "$hardware_pa
 done
 
 if (( ${#existing[@]} > 0 )) && (( force == 0 )); then
-  {
-    echo "refusing to overwrite existing files (use --force):"
+  if (( interactive == 1 )); then
+    echo "these files already exist:"
     printf '  %s\n' "${existing[@]}"
-  } >&2
-  exit 1
+    prompt_yes_no force "Overwrite these files?" "n"
+  fi
+
+  if (( force == 0 )); then
+    {
+      echo "refusing to overwrite existing files (use --force):"
+      printf '  %s\n' "${existing[@]}"
+    } >&2
+    exit 1
+  fi
 fi
 
 mkdir -p "$host_path"
