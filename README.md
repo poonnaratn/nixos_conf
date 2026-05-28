@@ -84,14 +84,14 @@ You can still use full CLI args:
 ```bash
 ./scripts/setup-new-host.sh \
   --host-dir desktop-main \
-  --flake-host desktopMain \
-  --module-prefix desktopMain \
   --system-hostname desktop-main \
   --user-name me \
   --user-description "me"
 ```
 
 Useful flags:
+- `--flake-host` if you want to override the default derived from host dir.
+- `--module-prefix` if you want module attr names different from flake host.
 - `--force` to overwrite existing host files.
 - `--with-power-management` to include `self.nixosModules.powerManagement` in the generated host profile (off by default for desktop-safe scaffolds).
 

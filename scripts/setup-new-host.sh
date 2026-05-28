@@ -8,22 +8,22 @@ Usage:
   scripts/setup-new-host.sh --interactive
   scripts/setup-new-host.sh \
     --host-dir <name> \
-    --flake-host <Name> \
-    --module-prefix <Prefix> \
     --system-hostname <hostname> \
     --user-name <name> \
+    [--flake-host <Name>] \
+    [--module-prefix <Prefix>] \
     [--user-description <text>] \
     [--with-power-management] \
     [--force]
 
 Required:
   --host-dir            Directory under modules/hosts (e.g. desktop-main)
-  --flake-host          flake.nixosConfigurations attr name (e.g. desktopMain)
-  --module-prefix       nixosModules prefix (e.g. desktopMain)
   --system-hostname     networking.hostName value
   --user-name           users.users attr name
 
 Optional:
+  --flake-host          default: derived from host-dir (e.g. desktop-main -> desktopMain)
+  --module-prefix       default: same as flake-host
   --interactive         ask questions step-by-step
   --user-description    defaults to --user-name
   --with-power-management
@@ -91,6 +91,26 @@ require_ident() {
   if [[ ! "$value" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
     die "$label must match ^[A-Za-z_][A-Za-z0-9_]*$, got: $value"
   fi
+}
+
+derive_camel_ident() {
+  local value="$1"
+  value="$(echo "$value" | tr -cs '[:alnum:]' ' ')"
+  read -r -a words <<<"$value"
+  [[ ${#words[@]} -gt 0 ]] || return 1
+
+  local out="${words[0],,}"
+  local i w
+  for (( i = 1; i < ${#words[@]}; i++ )); do
+    w="${words[i],,}"
+    out+="${w^}"
+  done
+
+  if [[ ! "$out" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+    return 1
+  fi
+
+  printf '%s' "$out"
 }
 
 host_dir=""
@@ -167,6 +187,9 @@ if (( interactive == 1 )); then
   echo
 
   prompt_with_default host_dir "Host directory (under modules/hosts)" "${host_dir:-}"
+  if [[ -z "$flake_host" ]]; then
+    flake_host="$(derive_camel_ident "$host_dir" || true)"
+  fi
   prompt_with_default flake_host "Flake host attr name (nixosConfigurations.<Name>)" "${flake_host:-}"
   prompt_with_default module_prefix "Module prefix (nixosModules.<Prefix>...)" "${module_prefix:-$flake_host}"
   prompt_with_default system_hostname "System hostname" "${system_hostname:-$host_dir}"
@@ -180,10 +203,14 @@ if (( interactive == 1 )); then
   fi
 else
   [[ -n "$host_dir" ]] || die "--host-dir is required"
-  [[ -n "$flake_host" ]] || die "--flake-host is required"
-  [[ -n "$module_prefix" ]] || die "--module-prefix is required"
   [[ -n "$system_hostname" ]] || die "--system-hostname is required"
   [[ -n "$user_name" ]] || die "--user-name is required"
+  if [[ -z "$flake_host" ]]; then
+    flake_host="$(derive_camel_ident "$host_dir")" || die "could not derive --flake-host from --host-dir; set --flake-host explicitly"
+  fi
+  if [[ -z "$module_prefix" ]]; then
+    module_prefix="$flake_host"
+  fi
   [[ -n "$user_description" ]] || user_description="$user_name"
 fi
 
