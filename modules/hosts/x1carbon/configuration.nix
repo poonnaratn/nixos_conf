@@ -6,15 +6,15 @@
 
       self.nixosModules.baseSystem
       self.nixosModules.localeAndTime
-      # self.nixosModules.plasmaDesktop
+      self.nixosModules.plasmaDesktop
       self.nixosModules.audioPipewire
       self.nixosModules.fontsThai
       self.nixosModules.desktopApps
       self.nixosModules.cliTools
+      self.nixosModules.powerManagement
 
       self.nixosModules.keyboard
       self.nixosModules.sshAgent
-      self.nixosModules.niri
     ];
   };
 }
