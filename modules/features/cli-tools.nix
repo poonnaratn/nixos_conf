@@ -2,6 +2,7 @@
   flake.nixosModules.cliTools = { lib, pkgs, ... }: {
     environment.systemPackages = with pkgs; [
       fzf
+      ripgrep
       zoxide
       eza
       docker
